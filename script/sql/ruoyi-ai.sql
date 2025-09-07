@@ -197,6 +197,46 @@ CREATE TABLE `chat_usage_token`  (
 
 
 -- ----------------------------
+-- Table structure for task_info
+-- ----------------------------
+DROP TABLE IF EXISTS `task_info`;
+CREATE TABLE `task_info`  (
+                               `task_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '任务ID',
+                               `parent_id` bigint(20) NULL DEFAULT 0 COMMENT '父任务ID，0表示顶级任务',
+                               `task_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '任务类型：personal/work',
+                               `task_title` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '任务标题',
+                               `task_content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '任务详细内容',
+                               `task_status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'pending' COMMENT '任务状态：pending/in_progress/completed/cancelled',
+                               `priority_level` int(1) NULL DEFAULT 3 COMMENT '优先级：1高 2中 3低',
+                               `planned_start_time` datetime NULL DEFAULT NULL COMMENT '计划开始时间',
+                               `planned_end_time` datetime NULL DEFAULT NULL COMMENT '计划结束时间',
+                               `actual_start_time` datetime NULL DEFAULT NULL COMMENT '实际开始时间',
+                               `actual_end_time` datetime NULL DEFAULT NULL COMMENT '实际结束时间',
+                               `task_progress` int(3) NULL DEFAULT 0 COMMENT '任务进度百分比',
+                               `assigned_user_id` bigint(20) NOT NULL COMMENT '任务负责人',
+                               `creator_user_id` bigint(20) NOT NULL COMMENT '任务创建人',
+                               `tenant_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '000000' COMMENT '租户ID',
+                               `create_dept` bigint(20) NULL DEFAULT NULL COMMENT '创建部门',
+                               `create_by` bigint(20) NOT NULL COMMENT '创建者',
+                               `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                               `update_by` bigint(20) NULL DEFAULT NULL COMMENT '更新者',
+                               `update_time` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                               `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '0' COMMENT '删除标志（0代表存在 1代表删除）',
+                               `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注信息',
+                               PRIMARY KEY (`task_id`) USING BTREE,
+                               INDEX `idx_parent_id`(`parent_id`) USING BTREE,
+                               INDEX `idx_task_type`(`task_type`) USING BTREE,
+                               INDEX `idx_task_status`(`task_status`) USING BTREE,
+                               INDEX `idx_assigned_user`(`assigned_user_id`) USING BTREE,
+                               INDEX `idx_creator_user`(`creator_user_id`) USING BTREE,
+                               INDEX `idx_create_time`(`create_time`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '任务信息表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of task_info
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for knowledge_attach
 -- ----------------------------
 DROP TABLE IF EXISTS `knowledge_attach`;
@@ -646,6 +686,15 @@ INSERT INTO `sys_menu` VALUES (1929170702299045892, '提示词模板新增', 192
 INSERT INTO `sys_menu` VALUES (1929170702299045893, '提示词模板修改', 1929170702299045890, '3',  '#', '', NULL, 1, 0, 'F', '0', '0', 'system:promptTemplate:edit',         '#', 103, 1, sysdate(), null, null, '');
 INSERT INTO `sys_menu` VALUES (1929170702299045894, '提示词模板删除', 1929170702299045890, '4',  '#', '', NULL, 1, 0, 'F', '0', '0', 'system:promptTemplate:remove',       '#', 103, 1, sysdate(), null, null, '');
 INSERT INTO `sys_menu` VALUES (1929170702299045895, '提示词模板导出', 1929170702299045890, '5',  '#', '', NULL, 1, 0, 'F', '0', '0', 'system:promptTemplate:export',       '#', 103, 1, sysdate(), null, null, '');
+
+-- 任务管理菜单
+INSERT INTO `sys_menu` VALUES (3000, '个人中心', 0, 30, 'personal', '', '', 1, 0, 'M', '0', '0', '', 'material-symbols:person-outline', 103, 1, now(), null, null, '个人中心目录');
+INSERT INTO `sys_menu` VALUES (3001, '任务管理', 3000, 1, 'task', 'personal/task/index', '', 1, 0, 'C', '0', '0', 'personal:task:list', 'material-symbols:task-outline', 103, 1, now(), null, null, '任务管理菜单');
+INSERT INTO `sys_menu` VALUES (3002, '任务查询', 3001, 1, '#', '', '', 1, 0, 'F', '0', '0', 'personal:task:query', '#', 103, 1, now(), null, null, '');
+INSERT INTO `sys_menu` VALUES (3003, '任务新增', 3001, 2, '#', '', '', 1, 0, 'F', '0', '0', 'personal:task:add', '#', 103, 1, now(), null, null, '');
+INSERT INTO `sys_menu` VALUES (3004, '任务修改', 3001, 3, '#', '', '', 1, 0, 'F', '0', '0', 'personal:task:edit', '#', 103, 1, now(), null, null, '');
+INSERT INTO `sys_menu` VALUES (3005, '任务删除', 3001, 4, '#', '', '', 1, 0, 'F', '0', '0', 'personal:task:remove', '#', 103, 1, now(), null, null, '');
+INSERT INTO `sys_menu` VALUES (3006, '任务导出', 3001, 5, '#', '', '', 1, 0, 'F', '0', '0', 'personal:task:export', '#', 103, 1, now(), null, null, '');
 
 INSERT INTO sys_menu VALUES  (2000, '在线开发', 0, 20, 'dev', '', '', 1, 0, 'M', '0', '0', '', 'carbon:development', 103, 1, '2025-07-11 19:38:05', 1, '2025-07-11 19:43:03', '在线开发目录');
 INSERT INTO sys_menu VALUES  (1944213468857495553, '模型分组', 2000, 1, 'schemaGroup', 'dev/schemaGroup/index', null, 1, 0, 'C', '0', '0', null, '#', 103, 1, '2025-07-13 09:53:07', 1, '2025-07-13 09:54:45', '模型分组菜单');

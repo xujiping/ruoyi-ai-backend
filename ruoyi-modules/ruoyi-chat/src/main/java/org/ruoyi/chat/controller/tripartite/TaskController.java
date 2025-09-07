@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/mj/task")
 @RequiredArgsConstructor
 @Slf4j
+@org.springframework.stereotype.Component("mjTaskController")
 public class TaskController {
 
     private final MjOkHttpUtil mjOkHttpUtil;

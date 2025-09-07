@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.personal.mapper.TaskInfoMapper">
+
+    <resultMap type="org.ruoyi.personal.domain.vo.TaskVo" id="TaskResult">
+        <result property="taskId"    column="task_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="taskType"    column="task_type"    />
+        <result property="taskTitle"    column="task_title"    />
+        <result property="taskContent"    column="task_content"    />
+        <result property="taskStatus"    column="task_status"    />
+        <result property="priorityLevel"    column="priority_level"    />
+        <result property="plannedStartTime"    column="planned_start_time"    />
+        <result property="plannedEndTime"    column="planned_end_time"    />
+        <result property="actualStartTime"    column="actual_start_time"    />
+        <result property="actualEndTime"    column="actual_end_time"    />
+        <result property="taskProgress"    column="task_progress"    />
+        <result property="assignedUserId"    column="assigned_user_id"    />
+        <result property="creatorUserId"    column="creator_user_id"    />
+        <result property="assignedUserName"    column="assigned_user_name"    />
+        <result property="creatorUserName"    column="creator_user_name"    />
+        <result property="parentTitle"    column="parent_title"    />
+        <result property="tenantId"    column="tenant_id"    />
+        <result property="createDept"    column="create_dept"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTaskVo">
+        select t.task_id,
+               t.parent_id,
+               t.task_type,
+               t.task_title,
+               t.task_content,
+               t.task_status,
+               t.priority_level,
+               t.planned_start_time,
+               t.planned_end_time,
+               t.actual_start_time,
+               t.actual_end_time,
+               t.task_progress,
+               t.assigned_user_id,
+               t.creator_user_id,
+               t.tenant_id,
+               t.create_dept,
+               t.create_by,
+               t.create_time,
+               t.update_by,
+               t.update_time,
+               t.del_flag,
+               t.remark,
+               au.nick_name as assigned_user_name,
+               cu.nick_name as creator_user_name,
+               pt.task_title as parent_title
+        from task_info t
+                 left join sys_user au on t.assigned_user_id = au.user_id
+                 left join sys_user cu on t.creator_user_id = cu.user_id
+                 left join task_info pt on t.parent_id = pt.task_id
+    </sql>
+
+    <select id="selectTaskWithUsers" parameterType="Long" resultMap="TaskResult">
+        <include refid="selectTaskVo"/>
+        where t.task_id = #{taskId}
+    </select>
+
+    <select id="selectTaskListWithUsers" parameterType="org.ruoyi.personal.domain.TaskInfo" resultMap="TaskResult">
+        <include refid="selectTaskVo"/>
+        <where>
+            t.del_flag = '0'
+            <if test="parentId != null">
+                and t.parent_id = #{parentId}
+            </if>
+            <if test="taskType != null and taskType != ''">
+                and t.task_type = #{taskType}
+            </if>
+            <if test="taskTitle != null and taskTitle != ''">
+                and t.task_title like concat('%', #{taskTitle}, '%')
+            </if>
+            <if test="taskStatus != null and taskStatus != ''">
+                and t.task_status = #{taskStatus}
+            </if>
+            <if test="priorityLevel != null">
+                and t.priority_level = #{priorityLevel}
+            </if>
+            <if test="assignedUserId != null">
+                and t.assigned_user_id = #{assignedUserId}
+            </if>
+            <if test="creatorUserId != null">
+                and t.creator_user_id = #{creatorUserId}
+            </if>
+        </where>
+        order by t.create_time desc
+    </select>
+
+    <select id="selectTaskTreeByUser" resultMap="TaskResult">
+        <include refid="selectTaskVo"/>
+        <where>
+            t.del_flag = '0'
+            <if test="taskType != null and taskType != ''">
+                and t.task_type = #{taskType}
+            </if>
+            and (t.assigned_user_id = #{userId} or t.creator_user_id = #{userId})
+        </where>
+        order by t.parent_id, t.create_time
+    </select>
+
+    <select id="selectChildCountByParentId" parameterType="Long" resultType="Long">
+        select count(*)
+        from task_info
+        where parent_id = #{parentId} and del_flag = '0'
+    </select>
+
+</mapper>
