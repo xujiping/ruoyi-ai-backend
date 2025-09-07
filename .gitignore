@@ -1,16 +1,22 @@
 ######################################################################
 # Build Tools
 
-
-
-
+# Gradle
 .gradle
 /build/
 !gradle/wrapper/gradle-wrapper.jar
 
+# Maven
 target/
 !.mvn/wrapper/maven-wrapper.jar
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
 
+# Generated files
 ruoyi-modules/ruoyi-generator/src/main/resources/vm/vben5
 
 ######################################################################
@@ -29,26 +35,109 @@ ruoyi-modules/ruoyi-generator/src/main/resources/vm/vben5
 *.iws
 *.iml
 *.ipr
+out/
+
+### Eclipse ###
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+### VSCode ###
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
 
 ### JRebel ###
 rebel.xml
 
 ### NetBeans ###
-nbproject/private/
-build/*
-nbbuild/
-nbdist/
-.nb-gradle/
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+######################################################################
+# Logs
+logs/
+*.log
+log/
+
+######################################################################
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+######################################################################
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+######################################################################
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+######################################################################
+# Application specific
+# Configuration files with sensitive data
+application-prod.yml
+application-local.yml
+*.env
+.env
+.env.local
+.env.*.local
+
+# H2 Database files
+*.db
+*.trace.db
+*.lock.db
+
+# Test output
+test-output/
+target/
 
 ######################################################################
 # Others
-*.log
 *.xml.versionsBackup
-*.swp
-
 !*/build/*.java
 !*/build/*.html
 !*/build/*.xml
 
 .flattened-pom.xml
-ruoyi-admin/.DS_Store
+
+######################################################################
+# Node.js (if any frontend build tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+######################################################################
+# Workspace and sample files
+workspace/
+!workspace/.gitkeep
+!workspace/sample.txt
