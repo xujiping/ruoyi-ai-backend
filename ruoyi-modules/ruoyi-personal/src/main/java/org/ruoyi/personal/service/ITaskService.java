@@ -3,6 +3,9 @@ package org.ruoyi.personal.service;
 import org.ruoyi.core.page.PageQuery;
 import org.ruoyi.core.page.TableDataInfo;
 import org.ruoyi.personal.domain.bo.TaskBo;
+import org.ruoyi.personal.domain.bo.TaskQueryBo;
+import org.ruoyi.personal.domain.bo.TaskCreateBo;
+import org.ruoyi.personal.domain.bo.TaskUpdateBo;
 import org.ruoyi.personal.domain.vo.TaskTreeVo;
 import org.ruoyi.personal.domain.vo.TaskVo;
 
@@ -28,43 +31,43 @@ public interface ITaskService {
     /**
      * 查询任务信息列表
      *
-     * @param bo 查询条件
+     * @param queryBo 查询条件
      * @param pageQuery 分页查询
      * @return 任务信息分页列表
      */
-    TableDataInfo<TaskVo> queryPageList(TaskBo bo, PageQuery pageQuery);
+    TableDataInfo<TaskVo> queryPageList(TaskQueryBo queryBo, PageQuery pageQuery);
 
     /**
      * 查询任务信息列表
      *
-     * @param bo 查询条件
+     * @param queryBo 查询条件
      * @return 任务信息列表
      */
-    List<TaskVo> queryList(TaskBo bo);
+    List<TaskVo> queryList(TaskQueryBo queryBo);
 
     /**
      * 查询任务树形结构
      *
-     * @param bo 查询条件
+     * @param queryBo 查询条件
      * @return 任务树形结构
      */
-    List<TaskTreeVo> queryTaskTree(TaskBo bo);
+    List<TaskTreeVo> queryTaskTree(TaskQueryBo queryBo);
 
     /**
      * 新增任务信息
      *
-     * @param bo 任务信息业务对象
+     * @param createBo 任务创建信息
      * @return 新增结果
      */
-    Boolean insertTask(TaskBo bo);
+    Boolean insertTask(TaskCreateBo createBo);
 
     /**
      * 修改任务信息
      *
-     * @param bo 任务信息业务对象
+     * @param updateBo 任务更新信息
      * @return 修改结果
      */
-    Boolean updateTask(TaskBo bo);
+    Boolean updateTask(TaskUpdateBo updateBo);
 
     /**
      * 更新任务状态

@@ -13,6 +13,9 @@ import org.ruoyi.core.page.TableDataInfo;
 import org.ruoyi.common.satoken.utils.LoginHelper;
 import org.ruoyi.personal.domain.TaskInfo;
 import org.ruoyi.personal.domain.bo.TaskBo;
+import org.ruoyi.personal.domain.bo.TaskQueryBo;
+import org.ruoyi.personal.domain.bo.TaskCreateBo;
+import org.ruoyi.personal.domain.bo.TaskUpdateBo;
 import org.ruoyi.personal.domain.vo.TaskTreeVo;
 import org.ruoyi.personal.domain.vo.TaskVo;
 import org.ruoyi.personal.enums.TaskStatusEnum;
@@ -49,8 +52,8 @@ public class TaskServiceImpl implements ITaskService {
      * 查询任务信息列表
      */
     @Override
-    public TableDataInfo<TaskVo> queryPageList(TaskBo bo, PageQuery pageQuery) {
-        LambdaQueryWrapper<TaskInfo> lqw = buildQueryWrapper(bo);
+    public TableDataInfo<TaskVo> queryPageList(TaskQueryBo queryBo, PageQuery pageQuery) {
+        LambdaQueryWrapper<TaskInfo> lqw = buildQueryWrapper(queryBo);
         Page<TaskVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
     }
@@ -59,8 +62,8 @@ public class TaskServiceImpl implements ITaskService {
      * 查询任务信息列表
      */
     @Override
-    public List<TaskVo> queryList(TaskBo bo) {
-        LambdaQueryWrapper<TaskInfo> lqw = buildQueryWrapper(bo);
+    public List<TaskVo> queryList(TaskQueryBo queryBo) {
+        LambdaQueryWrapper<TaskInfo> lqw = buildQueryWrapper(queryBo);
         return baseMapper.selectVoList(lqw);
     }
 
@@ -68,21 +71,20 @@ public class TaskServiceImpl implements ITaskService {
      * 查询任务树形结构
      */
     @Override
-    public List<TaskTreeVo> queryTaskTree(TaskBo bo) {
-        List<TaskVo> taskList = queryList(bo);
+    public List<TaskTreeVo> queryTaskTree(TaskQueryBo queryBo) {
+        List<TaskVo> taskList = queryList(queryBo);
         return buildTaskTree(taskList, 0L);
     }
 
     /**
      * 构建查询条件
      */
-    private LambdaQueryWrapper<TaskInfo> buildQueryWrapper(TaskBo bo) {
-        Map<String, Object> params = bo.getParams();
+    private LambdaQueryWrapper<TaskInfo> buildQueryWrapper(TaskQueryBo queryBo) {
         LambdaQueryWrapper<TaskInfo> lqw = Wrappers.lambdaQuery();
         
         // 权限控制：个人任务只能查看自己相关的任务
         Long currentUserId = LoginHelper.getUserId();
-        if (TaskTypeEnum.PERSONAL.getValue().equals(bo.getTaskType())) {
+        if (TaskTypeEnum.PERSONAL.getValue().equals(queryBo.getTaskType())) {
             lqw.and(wrapper -> wrapper
                 .eq(TaskInfo::getAssignedUserId, currentUserId)
                 .or()
@@ -90,13 +92,19 @@ public class TaskServiceImpl implements ITaskService {
             );
         }
         
-        lqw.eq(bo.getParentId() != null, TaskInfo::getParentId, bo.getParentId());
-        lqw.eq(StringUtils.isNotBlank(bo.getTaskType()), TaskInfo::getTaskType, bo.getTaskType());
-        lqw.like(StringUtils.isNotBlank(bo.getTaskTitle()), TaskInfo::getTaskTitle, bo.getTaskTitle());
-        lqw.eq(StringUtils.isNotBlank(bo.getTaskStatus()), TaskInfo::getTaskStatus, bo.getTaskStatus());
-        lqw.eq(bo.getPriorityLevel() != null, TaskInfo::getPriorityLevel, bo.getPriorityLevel());
-        lqw.eq(bo.getAssignedUserId() != null, TaskInfo::getAssignedUserId, bo.getAssignedUserId());
-        lqw.eq(bo.getCreatorUserId() != null, TaskInfo::getCreatorUserId, bo.getCreatorUserId());
+        lqw.eq(queryBo.getParentId() != null, TaskInfo::getParentId, queryBo.getParentId());
+        lqw.eq(StringUtils.isNotBlank(queryBo.getTaskType()), TaskInfo::getTaskType, queryBo.getTaskType());
+        lqw.like(StringUtils.isNotBlank(queryBo.getTaskTitle()), TaskInfo::getTaskTitle, queryBo.getTaskTitle());
+        lqw.eq(StringUtils.isNotBlank(queryBo.getTaskStatus()), TaskInfo::getTaskStatus, queryBo.getTaskStatus());
+        lqw.eq(queryBo.getPriorityLevel() != null, TaskInfo::getPriorityLevel, queryBo.getPriorityLevel());
+        lqw.eq(queryBo.getAssignedUserId() != null, TaskInfo::getAssignedUserId, queryBo.getAssignedUserId());
+        
+        // 时间范围查询
+        lqw.ge(queryBo.getPlannedStartTimeBegin() != null, TaskInfo::getPlannedStartTime, queryBo.getPlannedStartTimeBegin());
+        lqw.le(queryBo.getPlannedStartTimeEnd() != null, TaskInfo::getPlannedStartTime, queryBo.getPlannedStartTimeEnd());
+        lqw.ge(queryBo.getPlannedEndTimeBegin() != null, TaskInfo::getPlannedEndTime, queryBo.getPlannedEndTimeBegin());
+        lqw.le(queryBo.getPlannedEndTimeEnd() != null, TaskInfo::getPlannedEndTime, queryBo.getPlannedEndTimeEnd());
+        
         lqw.orderByDesc(TaskInfo::getCreateTime);
         
         return lqw;
@@ -121,34 +129,25 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean insertTask(TaskBo bo) {
-        TaskInfo add = MapstructUtils.convert(bo, TaskInfo.class);
+    public Boolean insertTask(TaskCreateBo createBo) {
+        TaskInfo add = MapstructUtils.convert(createBo, TaskInfo.class);
         validEntityBeforeSave(add);
         
         // 设置默认值
         if (add.getParentId() == null) {
             add.setParentId(0L);
         }
-        if (StringUtils.isBlank(add.getTaskStatus())) {
-            add.setTaskStatus(TaskStatusEnum.PENDING.getValue());
-        }
+        add.setTaskStatus(TaskStatusEnum.PENDING.getValue()); // 默认待处理状态
         if (add.getPriorityLevel() == null) {
             add.setPriorityLevel(3); // 默认低优先级
         }
-        if (add.getTaskProgress() == null) {
-            add.setTaskProgress(0);
-        }
+        add.setTaskProgress(0); // 默认进度为0
         if (add.getAssignedUserId() == null) {
             add.setAssignedUserId(LoginHelper.getUserId());
         }
-        if (add.getCreatorUserId() == null) {
-            add.setCreatorUserId(LoginHelper.getUserId());
-        }
+        add.setCreatorUserId(LoginHelper.getUserId()); // 系统自动设置创建者
         
         boolean flag = baseMapper.insert(add) > 0;
-        if (flag) {
-            bo.setTaskId(add.getTaskId());
-        }
         return flag;
     }
 
@@ -157,8 +156,8 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean updateTask(TaskBo bo) {
-        TaskInfo update = MapstructUtils.convert(bo, TaskInfo.class);
+    public Boolean updateTask(TaskUpdateBo updateBo) {
+        TaskInfo update = MapstructUtils.convert(updateBo, TaskInfo.class);
         validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
     }

@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.ruoyi.common.core.domain.R;
-import org.ruoyi.common.core.validate.AddGroup;
-import org.ruoyi.common.core.validate.EditGroup;
+
 import org.ruoyi.common.excel.utils.ExcelUtil;
 import org.ruoyi.common.idempotent.annotation.RepeatSubmit;
 import org.ruoyi.common.log.annotation.Log;
@@ -15,6 +14,9 @@ import org.ruoyi.core.page.PageQuery;
 import org.ruoyi.core.page.TableDataInfo;
 import org.ruoyi.common.web.core.BaseController;
 import org.ruoyi.personal.domain.bo.TaskBo;
+import org.ruoyi.personal.domain.bo.TaskQueryBo;
+import org.ruoyi.personal.domain.bo.TaskCreateBo;
+import org.ruoyi.personal.domain.bo.TaskUpdateBo;
 import org.ruoyi.personal.domain.vo.TaskTreeVo;
 import org.ruoyi.personal.domain.vo.TaskVo;
 import org.ruoyi.personal.service.ITaskService;
@@ -43,8 +45,8 @@ public class TaskController extends BaseController {
      */
     // @PreAuthorize("@ss.hasPermi('personal:task:list')")
     @GetMapping("/list")
-    public TableDataInfo<TaskVo> list(TaskBo bo, PageQuery pageQuery) {
-        return taskService.queryPageList(bo, pageQuery);
+    public TableDataInfo<TaskVo> list(TaskQueryBo queryBo, PageQuery pageQuery) {
+        return taskService.queryPageList(queryBo, pageQuery);
     }
 
     /**
@@ -52,8 +54,8 @@ public class TaskController extends BaseController {
      */
     // @PreAuthorize("@ss.hasPermi('personal:task:list')")
     @GetMapping("/tree")
-    public R<List<TaskTreeVo>> tree(TaskBo bo) {
-        List<TaskTreeVo> list = taskService.queryTaskTree(bo);
+    public R<List<TaskTreeVo>> tree(TaskQueryBo queryBo) {
+        List<TaskTreeVo> list = taskService.queryTaskTree(queryBo);
         return R.ok(list);
     }
 
@@ -63,8 +65,8 @@ public class TaskController extends BaseController {
     // @PreAuthorize("@ss.hasPermi('personal:task:export')")
     @Log(title = "任务信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(TaskBo bo, HttpServletResponse response) {
-        List<TaskVo> list = taskService.queryList(bo);
+    public void export(TaskQueryBo queryBo, HttpServletResponse response) {
+        List<TaskVo> list = taskService.queryList(queryBo);
         ExcelUtil.exportExcel(list, "任务信息", TaskVo.class, response);
     }
 
@@ -85,8 +87,8 @@ public class TaskController extends BaseController {
     @Log(title = "任务信息", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody TaskBo bo) {
-        return toAjax(taskService.insertTask(bo));
+    public R<Void> add(@Validated @RequestBody TaskCreateBo createBo) {
+        return toAjax(taskService.insertTask(createBo));
     }
 
     /**
@@ -96,8 +98,8 @@ public class TaskController extends BaseController {
     @Log(title = "任务信息", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody TaskBo bo) {
-        return toAjax(taskService.updateTask(bo));
+    public R<Void> edit(@Validated @RequestBody TaskUpdateBo updateBo) {
+        return toAjax(taskService.updateTask(updateBo));
     }
 
     /**
