@@ -3,6 +3,7 @@ package org.ruoyi.personal.domain;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.ruoyi.common.tenant.core.TenantEntity;
@@ -63,21 +64,25 @@ public class TaskInfo extends TenantEntity {
     /**
      * 计划开始时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date plannedStartTime;
 
     /**
      * 计划结束时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date plannedEndTime;
 
     /**
      * 实际开始时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date actualStartTime;
 
     /**
      * 实际结束时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date actualEndTime;
 
     /**

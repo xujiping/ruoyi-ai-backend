@@ -2,6 +2,7 @@ package org.ruoyi.personal.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import org.ruoyi.personal.domain.TaskInfo;
@@ -97,24 +98,28 @@ public class TaskVo implements Serializable {
      * 计划开始时间
      */
     @ExcelProperty(value = "计划开始时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date plannedStartTime;
 
     /**
      * 计划结束时间
      */
     @ExcelProperty(value = "计划结束时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date plannedEndTime;
 
     /**
      * 实际开始时间
      */
     @ExcelProperty(value = "实际开始时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date actualStartTime;
 
     /**
      * 实际结束时间
      */
     @ExcelProperty(value = "实际结束时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date actualEndTime;
 
     /**
@@ -151,12 +156,14 @@ public class TaskVo implements Serializable {
      * 创建时间
      */
     @ExcelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 更新时间
      */
     @ExcelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**

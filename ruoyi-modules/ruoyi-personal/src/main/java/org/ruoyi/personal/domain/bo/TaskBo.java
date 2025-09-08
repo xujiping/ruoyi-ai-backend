@@ -1,5 +1,6 @@
 package org.ruoyi.personal.domain.bo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.github.linpeilie.annotations.AutoMapper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -66,21 +67,25 @@ public class TaskBo extends TenantEntity {
     /**
      * 计划开始时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date plannedStartTime;
 
     /**
      * 计划结束时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date plannedEndTime;
 
     /**
      * 实际开始时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date actualStartTime;
 
     /**
      * 实际结束时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date actualEndTime;
 
     /**
