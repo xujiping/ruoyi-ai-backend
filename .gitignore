@@ -16,9 +16,6 @@ target/
 *.tar.gz
 *.rar
 
-# Generated files
-ruoyi-modules/ruoyi-generator/src/main/resources/vm/vben5
-
 ######################################################################
 # IDE
 
