@@ -37,16 +37,6 @@
 
         <dependency>
             <groupId>org.ruoyi</groupId>
-            <artifactId>ruoyi-common-excel</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ruoyi</groupId>
-            <artifactId>ruoyi-common-doc</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ruoyi</groupId>
             <artifactId>ruoyi-common-translation</artifactId>
         </dependency>
 
@@ -54,12 +44,6 @@
             <groupId>org.ruoyi</groupId>
             <artifactId>ruoyi-common-log</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.ruoyi</groupId>
-            <artifactId>ruoyi-common-satoken</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>

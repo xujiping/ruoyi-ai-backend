@@ -49,12 +49,22 @@
 
         <dependency>
             <groupId>org.ruoyi</groupId>
+            <artifactId>ruoyi-system-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ruoyi</groupId>
             <artifactId>ruoyi-chat</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.ruoyi</groupId>
             <artifactId>ruoyi-personal</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ruoyi</groupId>
+            <artifactId>ruoyi-common-satoken</artifactId>
         </dependency>
 
     </dependencies>
